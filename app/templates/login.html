@@ -1,0 +1,8 @@
+{% extends 'app/layouts/layout.html' %}
+{% block root %}
+    <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button>login</button>
+    </form>
+{% endblock %}

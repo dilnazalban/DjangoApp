@@ -1,0 +1,11 @@
+{% extends 'app/layouts/layout.html' %}
+{% block root %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button style="background-color: #13a2ff"> submit</button>
+    </form>
+
+
+{% endblock %}
