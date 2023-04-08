@@ -42,6 +42,12 @@ class AppIndex(DataMixin, ListView):
 
 def AppShow(request, slug):
     app = models.App.objects.get(url=slug)
+    if request.method == "POST":
+        curUser = request.user.pk
+        message = request.POST.get("comment", None)
+        star = request.POST.get("star", None)
+        title = request.POST.get("title", None)
+
     return render(request, 'app/show.html', {"app": app})
 
 

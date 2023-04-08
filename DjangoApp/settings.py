@@ -1,4 +1,3 @@
-
 import os.path
 from pathlib import Path
 
@@ -10,7 +9,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 INSTALLED_APPS = [
     'app.apps.AppConfig',
     'django.contrib.admin',
@@ -20,6 +18,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'captcha',
+    'crispy_forms',
+    'crispy_bootstrap4',
 
 ]
 
@@ -39,7 +40,7 @@ ROOT_URLCONF = 'DjangoApp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,3 +116,4 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'cashes')
     }
 }
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

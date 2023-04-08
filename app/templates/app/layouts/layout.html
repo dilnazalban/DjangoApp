@@ -5,14 +5,19 @@
     <meta charset="UTF-8">
     <title>{% if title %}
         {{ title }}
-        {% else %}
+    {% else %}
         page
     {% endif %} </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/bootstrap.min.css' %}" media="all"/>
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/slicknav.min.css' %}" media="all"/>
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" media="all"/>
     <style>
-        .myMain{
+        .myMain {
             margin-top: 300px;
             padding: 20px;
         }
@@ -26,7 +31,9 @@
     <div class="container">
         <div class="header-area">
             <div class="logo">
-                <a href="#"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSavJKp9cali_uRVOpVyp7DcA4-eqgsU52Elg&usqp=CAU" alt="logo"/></a>
+                <a href="#"><img
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSavJKp9cali_uRVOpVyp7DcA4-eqgsU52Elg&usqp=CAU"
+                        alt="logo"/></a>
             </div>
             <div class="menu-area" style="margin-top: 50px">
                 <div class="responsive-menu"></div>
@@ -39,17 +46,17 @@
                         <li><a href="#">Categories <i class="icofont icofont-simple-down"></i></a>
                             <ul>
                                 {% for cat in cats %}
-                                   <li><a href="{% url 'category' cat.url %}">{{ cat.name }}</a></li>
+                                    <li><a href="{% url 'category' cat.url %}">{{ cat.name }}</a></li>
                                 {% endfor %}
                             </ul>
                         </li>
-                    {% if user.is_authenticated %}
-                        <li><a  href="#">Profile</a></li>
-                        <li><a  href="{% url 'logout' %}">logout</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="#">Profile</a></li>
+                            <li><a href="{% url 'logout' %}">logout</a></li>
                         {% else %}
-                        <li><a  href="{% url 'login' %}">login</a></li>
-                        <li><a  href="{% url 'register' %}">register</a></li>
-                    {% endif %}
+                            <li><a href="{% url 'login' %}">login</a></li>
+                            <li><a href="{% url 'register' %}">register</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

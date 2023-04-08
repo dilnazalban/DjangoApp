@@ -8,6 +8,7 @@ from app.views import RegisterView, Index, Login, logout_form
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('captcha/', include('captcha.urls')),
     path('', Index.as_view(), name='home'),
     path('register', RegisterView.as_view(), name="register"),
     path('login', Login.as_view(), name="login"),
@@ -21,8 +22,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns = [path('__debug__/', include(debug_toolbar.urls))] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-
