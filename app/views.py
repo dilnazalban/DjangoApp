@@ -3,14 +3,12 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, FormView, TemplateView, DetailView, CreateView
+from django.views.generic import ListView, FormView, TemplateView, CreateView
 
-from . import models
 from .forms import *
-from .models import App, Category
+from .models import App, Category, Comment
 from .utils import DataMixin
 
 
@@ -41,14 +39,43 @@ class AppIndex(DataMixin, ListView):
 
 
 def AppShow(request, slug):
-    app = models.App.objects.get(url=slug)
+    app = App.objects.get(url=slug)
     if request.method == "POST":
-        curUser = request.user.pk
-        message = request.POST.get("comment", None)
+        currentUser = request.user
         star = request.POST.get("star", None)
-        title = request.POST.get("title", None)
+        comment = request.POST.get("comment", None)
+        if star:
+            ratingUser = None
+            if app.rating_set.count() > 0:
+                ratingUser = Rating.objects.get(author=currentUser.pk, app=app.pk)
+            if not ratingUser and int(star):
+                rat = Rating()
+                rat.app = app
+                rat.star = int(star)
+                rat.author = currentUser
+                rat.save()
+            elif ratingUser and int(star):
+                rat = Rating.objects.get(author=currentUser, app=app)
+                rat.star = int(star)
+                rat.save()
+        if comment:
+            com = Comment()
+            com.app = app
+            com.user = currentUser
+            com.message = comment
+            com.save()
 
-    return render(request, 'app/show.html', {"app": app})
+    ratings = app.rating_set.all()
+    if ratings.count() > 0:
+        summa = 0
+        for rating in ratings:
+            summa += rating.star
+        ratingV = summa / ratings.count()
+        a = [{"isStar": True} if ratingV > x else {"isStar": False} for x in range(0, 10)]
+    else:
+        a = None
+    comments = Comment.objects.select_related("user").filter(app=app.pk)
+    return render(request, 'app/show.html', {"app": app, "rating": a, "comments": comments})
 
 
 def categoryView(request, url):
@@ -69,6 +96,7 @@ def categoryView(request, url):
 #     model = models.App
 #     slug_field = "url"
 #     template_name = "app/show.html"
+
 
 class ContactView(DataMixin, FormView):
     success_url = 'app_index'

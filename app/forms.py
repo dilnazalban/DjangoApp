@@ -26,9 +26,9 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ('username', 'email', 'password1', 'password2', 'first_name', "last_name")
 
+
 # class RatingForm(forms.ModelForm):
-#     author = forms.HiddenInput(serializers.CurrentUserDefault())
 #
 #     class Meta:
 #         model = Rating
-#         fields = ("__all__")
+#         exclude = ["user"]

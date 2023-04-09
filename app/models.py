@@ -57,7 +57,14 @@ class AppImage(models.Model):
 
 
 class Rating(models.Model):
-    app = models.ForeignKey(App, default=0, on_delete=models.CASCADE)
+    app = models.ForeignKey(App, on_delete=models.CASCADE)
     star = models.PositiveSmallIntegerField(default=0)
-    message = models.CharField(max_length=240, null=True, blank=True)
-    author = models.CharField(max_length=180)
+    author = models.ForeignKey(User, on_delete=models.RESTRICT)
+
+
+class Comment(models.Model):
+    app = models.ForeignKey(App, on_delete=models.CASCADE)
+    message = models.TextField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.RESTRICT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

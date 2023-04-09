@@ -1,54 +1,183 @@
 {% extends 'app/layouts/layout.html' %}
 {% block root %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-    .app{
-        height: 400px;
-        width: 1000px;
-        background-color: #5a6268;
-        display: flex;
-    }
-    .myimg{
-        width: 40%;
+        .app {
+            margin-left: 40px;
+            height: 400px;
+            width: 1000px;
+            background-color: #5a6268;
+            display: flex;
+        }
 
-    }
-    .contents{
-        width: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        padding: 10px;
-    }
+        .myimg {
+            width: 40%;
+
+        }
+
+        .contents {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding-left: 30px;
+            padding-top: 10px;
+        }
+
+        .checked {
+            color: orange;
+        }
+
+        body {
+            background: #EEEEEE;
+        }
+
+        .box-info.full {
+            padding: 0px;
+        }
+
+        .box-info:hover {
+            color: #393E48;
+        }
+
+        .box-info {
+            position: relative;
+            padding: 15px;
+            background: #fff;
+            color: #5b5b5b;
+            margin-bottom: 20px;
+            -webkit-transition: All 0.4s ease;
+            -moz-transition: All 0.4s ease;
+            -o-transition: All 0.4s ease;
+            background: #FFFFFF;
+            margin-top: 20px;
+        }
+
+        .box-info .nav-tabs {
+            background: #1B1E24;
+        }
+
+        .box-info .nav-tabs li.active a, .box-info .nav-tabs li.active a:hover, .box-info .nav-tabs li.active a:focus {
+            cursor: default;
+            border-top: none;
+            border-right: none;
+            border-left: none;
+            border-bottom: none;
+            background-color: #ffffff;
+            color: #1B1E24;
+        }
+
+        .box-info .nav-tabs li.active a i, .box-info .nav-tabs li.active a:hover i, .box-info .nav-tabs li.active a:focus i {
+            color: #212121;
+        }
+
+        .box-info .nav-tabs li a i {
+            color: #fff;
+        }
+
+        .box-info.full .box-footer {
+            padding: 20px 20px 15px 20px;
+        }
+
+        .box-info .media-list {
+            margin-top: 30px;
+        }
+
+        .box-info .media-list .media {
+            padding: 5px 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .box-info .media-list .media .media-object {
+            width: 50px;
+        }
+
+        .scroll-widget {
+            overflow: hidden;
+            width: auto;
+            height: 325px;
+        }
+
+        {#scroll-widget, media-list, media, pull-left, media-object, media-body, media-heading#}
+
     </style>
+
+    </head>
+
+
     <div class="app">
-    <div class="myimg" ><img width="600" height="400" src="{{ app.poster.url }}" alt="..."></div>
-    <div class="contents">
-        <div> <h1>{{ app.name }}</h1> </div>
-        <div>{{ app.description }}   </div>
-        <div>  {{ app.created_at }} </div>
+        <div class="myimg"><img width="600" height="400" src="{{ app.poster.url }}" alt="..."></div>
+        <div class="contents">
+            <div><h1>{{ app.name }}</h1></div>
+            <div>{{ app.description }}   </div>
+            <div>date: {{ app.created_at|date }} </div>
+            <div>installers: {{ app.installers }} </div>
+            <div>app size: {{ app.size }} MB</div>
+
+            <div> rating: {% if rating %}
+                {% for r in rating %}
+                    {% if r.isStar %}
+                         <span class="fa fa-star checked"></span>
+                    {% else %}
+                         <span class="fa fa-star"></span>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                not rated
+            {% endif %}
+            </div>
+        </div>
     </div>
-    </div>
+
+    <br>
+    <hr>
+    <br>
+    <form method="post" style="display:flex; justify-content: space-around">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="exampleInputPassword4" class="form-label">Rating</label>
+            <input name="star" style="width: 400px; margin-top: 20px" type="range" class="form-range" min="0" max="10"
+                   id="customRange2">
+        </div>
+        <button type="submit" class="btn btn-outline-primary">rate</button>
+    </form>
+    <center><h3>add comment</h3></center>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">comment</label>
+            <textarea name="comment" id="exampleInputPassword1" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Submit</button>
+    </form>
 
 
     <hr>
-        <center><h3>add comment</h3></center>
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">title</label>
-                <input type="text" name="title" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            </div>
-            <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">comment</label>
-                <textarea name="comment" id="exampleInputPassword1" class="form-control"></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="exampleInputPassword4" class="form-label">Rating</label>
-                <input name="star" type="range" class="form-range" min="0" max="10" id="customRange2">
-            </div>
+    <center><h3>comments</h3></center>
+    <hr>
+    <ul class="p-0">
+        {% for comment in comments %}
 
-            <button type="submit" class="btn btn-outline-primary">Submit</button>
-        </form>
-        <hr>
-        <center><h3>comments</h3></center>
-        <br><br><br>
+            <li>
+                <div class="row comments mb-2">
+                    <div class="col-md-2 offset-md-2 col-sm-2 offset-sm-2 col-3 offset-1 text-center user-img">
+                        <img id="profile-photo" width="60" height="60" src="http://nicesnippets.com/demo/man02.png"
+                             class="rounded-circle"/>
+                    </div>
+                    <div class="col-md-7 col-sm-7 col-8 comment rounded mb-2">
+                        <div style="display: flex; justify-content: space-between">
+                            <h4 class="m-0"><a href="#" style="color: #000000">{{ comment.user }}</a></h4>
+                            <time class="text-white ml-3">{{ comment.created_at|date:"SHORT_DATE_FORMAT" }}</time>
+                        </div>
+
+                        <p class="mb-0 text-white">{{ comment.message }}</p>
+                    </div>
+                </div>
+            </li>
+
+            <hr>
+        {% endfor %}
+    </ul>
+    <br><br><br>
 {% endblock %}
+
