@@ -4,11 +4,13 @@ from django.contrib import admin
 from django.urls import path, include
 # from app.views import handler404, handler500
 
-from app.views import RegisterView, Index, Login, logout_form
+from app.views import RegisterView, Index, Login, logout_form, UserViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('captcha/', include('captcha.urls')),
+    path('api/v1/users', UserViewSet.as_view({"get": "list"})),
+    path('api/v1/users/<int:id>/', UserViewSet.as_view({"get": "retrieve"})),
     path('', Index.as_view(), name='home'),
     path('register', RegisterView.as_view(), name="register"),
     path('login', Login.as_view(), name="login"),

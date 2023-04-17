@@ -6,9 +6,11 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView, TemplateView, CreateView
+from rest_framework import viewsets, permissions
 
 from .forms import *
 from .models import App, Category, Comment
+from .serializers import UserSerializer
 from .utils import DataMixin
 
 
@@ -137,3 +139,8 @@ class Login(DataMixin, LoginView):
 def logout_form(request):
     logout(request)
     return redirect("login")
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

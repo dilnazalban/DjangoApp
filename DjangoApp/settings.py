@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'captcha',
     'crispy_forms',
     'crispy_bootstrap4',
+    'rest_framework',
 
 ]
 
