@@ -10,7 +10,7 @@ from rest_framework import viewsets, permissions
 
 from .forms import *
 from .models import App, Category, Comment
-from .serializers import UserSerializer
+from .serializers import UserSerializer, AppSerializer
 from .utils import DataMixin
 
 
@@ -144,3 +144,8 @@ def logout_form(request):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class AppViewSet(viewsets.ModelViewSet):
+    queryset = App.objects.all()
+    serializer_class = AppSerializer
