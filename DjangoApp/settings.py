@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-*-hynqyfa2vkzem0&j-5+re)p^69(1i$!ywpg&at^&$&19_j96
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'app.apps.AppConfig',
@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
     'rest_framework',
+    'corsheaders',
 
 ]
 
@@ -34,6 +35,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'DjangoApp.urls'
@@ -109,7 +111,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-INTERNAL_IPS = ["127.0.0.1"]
+INTERNAL_IPS = []
 
 CACHES = {
     'default': {
@@ -118,3 +120,10 @@ CACHES = {
     }
 }
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': {
+        'rest_framework.permissions.AllowAny'
+    }
+}
+CORS_ORIGIN_ALLOW_ALL = True

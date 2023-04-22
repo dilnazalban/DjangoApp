@@ -2,7 +2,16 @@
 {% block root %}
 
 
+
     <div class="container">
+    <form class="input-group" method="get">
+        <div class="form-outline">
+            <input name="app_name" style="width: 400px;margin-left: 300px" type="search" class="form-control"/>
+        </div>
+        <button   class="btn btn-primary">
+          search
+        </button>
+    </form>
         <div>
             {% if object_list %}
                 {% for app in object_list %}

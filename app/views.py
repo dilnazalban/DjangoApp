@@ -1,16 +1,22 @@
 from django.contrib import messages
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView, TemplateView, CreateView
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status, generics
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .forms import *
 from .models import App, Category, Comment
-from .serializers import UserSerializer, AppSerializer
+from .serializers import UserSerializer, AppSerializer, UserLoginSerializer, RegisterSerializer, AppCategorySerializer
 from .utils import DataMixin
 
 
@@ -21,12 +27,13 @@ class Index(DataMixin, TemplateView):
         return self.get_user_context(title="main page")
 
 
-# def appIndex(request):
-#     appList = models.App.objects.all()
-#     paginator = Paginator(appList, 3)
-#     page_num = request.GET.get('page')
-#     appList = paginator.get_page(page_num)
-#     return render(request, 'app/index.html', {'object_list': appList})
+class ProfileView(DataMixin, TemplateView):
+    template_name = "profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        mixin = self.get_user_context(title="register")
+        return dict(list(context.items()) + list(mixin.items()))
 
 
 class AppIndex(DataMixin, ListView):
@@ -38,6 +45,15 @@ class AppIndex(DataMixin, ListView):
         context = super().get_context_data(**kwargs)
         mixin = self.get_user_context(title="apps page")
         return dict(list(context.items()) + list(mixin.items()))
+
+    def get_queryset(self):
+        query = self.request.GET.get("app_name")
+        object_list = App.objects.all()
+        if query:
+            self.paginate_by = 10
+            object_list = App.objects.filter(Q(name__icontains=query) | Q(name__icontains=query))
+
+        return object_list
 
 
 def AppShow(request, slug):
@@ -124,6 +140,18 @@ class RegisterView(DataMixin, CreateView):
         return dict(list(context.items()) + list(mixin.items()))
 
 
+class TopAppsView(DataMixin, TemplateView):
+    template_name = "app/top_apps.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["top_apps"] = Rating.objects.select_related("app").order_by("-star")
+        mixin = self.get_user_context(title="register")
+        return dict(list(context.items()) + list(mixin.items()))
+
+    # def get(self, request, *args, **kwargs):
+
+
 class Login(DataMixin, LoginView):
     form_class = AuthenticationForm
     template_name = "login.html"
@@ -147,5 +175,100 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class AppViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.AllowAny,)
     queryset = App.objects.all()
     serializer_class = AppSerializer
+
+
+class AppCategoryViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.AllowAny,)
+    queryset = Category.objects.all()
+    serializer_class = AppCategorySerializer
+
+
+class UserLogin(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
+
+    ##
+    def post(self, request):
+        data = request.data
+        serializer = UserLoginSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.check_user(data)
+            authUser = User.objects.filter(username=data.get("username")).values()
+            login(request, user)
+            return Response(authUser[0], status=status.HTTP_200_OK)
+
+
+class UserLogout(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
+    def post(self, request):
+        logout(request)
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+
+    ##
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+
+
+class RegisterViewAPI(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+
+
+# @api_view(["POST"])
+# def adminLogin(request):
+#     if request.method == "POST":
+#         username = request.data.get("username", None)
+#         password = request.data.get("password", None)
+#         if username and password:
+#             authenticated_user = authenticate(request, username=username, password=password)
+#             if authenticated_user is not None:
+#                 if authenticated_user.is_authenticated and authenticated_user.is_superuser:
+#                     login(request, authenticated_user)
+#                     return Response({"message": "User is successfully Authenticated. "})
+#                 else:
+#                     return Response({"message": "User is not authenticated. "})
+#             else:
+#                 return Response({"message": "Either User is not registered or password does not match"})
+#         else:
+#             return Response({"message": "not required field"})
+
+
+@api_view(["POST"])
+# @permission_classes([IsAuthenticated])
+def APILogout(request):
+    print(request.user)
+    logout(request)
+    return Response({"message": "User successfully Logged out"})
+
+# class AuthMe(APIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     def get(self, request):
+#         currentUser = User.objects.filter(id=self.request.user.pk).values()
+#
+#         return Response(currentUser[0])
+
+# class UserRegister(APIView):
+#     permission_classes = (permissions.AllowAny,)
+#
+#     def post(self, request):
+#         # clean_data = custom_validation(request.data)
+#         print(request.data)
+#         serializer = UserRegisterSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             user = serializer.create(request.data)
+#             if user:
+#                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(status=status.HTTP_400_BAD_REQUEST)
