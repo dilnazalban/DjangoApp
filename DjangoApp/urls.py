@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-# from app.views import handler404, handler500
+from app.views import handler404, handler500
 
 from app.views import *
 
@@ -25,8 +25,8 @@ urlpatterns = [
 
 ]
 
-# handler404 = handler404
-# handler500 = handler500
+handler404 = handler404
+handler500 = handler500
 
 if settings.DEBUG:
     import debug_toolbar

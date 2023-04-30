@@ -10,6 +10,7 @@ from django.views.generic import ListView, FormView, TemplateView, CreateView
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -103,12 +104,13 @@ def categoryView(request, url):
     return render(request, "app/category.html", context)
 
 
-# def handler404(request, exception):
-#     return render(request, '404page.html', status=404)
-#
-#
-# def handler500(exception):
-#     return render(template_name='404page.html', status=500)
+def handler404(request, exception):
+    return render(request, '404page.html', status=404)
+
+
+def handler500(exception):
+    return ("<h1>eror 500 </h1>")
+
 
 # class AppShow(DetailView):
 #     model = models.App
@@ -169,9 +171,16 @@ def logout_form(request):
     return redirect("login")
 
 
+class Pagination(PageNumberPagination):
+    page_size = 3
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = Pagination
 
 
 class AppViewSet(viewsets.ModelViewSet):
@@ -226,49 +235,9 @@ class RegisterViewAPI(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
 
-# @api_view(["POST"])
-# def adminLogin(request):
-#     if request.method == "POST":
-#         username = request.data.get("username", None)
-#         password = request.data.get("password", None)
-#         if username and password:
-#             authenticated_user = authenticate(request, username=username, password=password)
-#             if authenticated_user is not None:
-#                 if authenticated_user.is_authenticated and authenticated_user.is_superuser:
-#                     login(request, authenticated_user)
-#                     return Response({"message": "User is successfully Authenticated. "})
-#                 else:
-#                     return Response({"message": "User is not authenticated. "})
-#             else:
-#                 return Response({"message": "Either User is not registered or password does not match"})
-#         else:
-#             return Response({"message": "not required field"})
-
-
 @api_view(["POST"])
 # @permission_classes([IsAuthenticated])
 def APILogout(request):
     print(request.user)
     logout(request)
     return Response({"message": "User successfully Logged out"})
-
-# class AuthMe(APIView):
-#     permission_classes = (IsAuthenticated,)
-#
-#     def get(self, request):
-#         currentUser = User.objects.filter(id=self.request.user.pk).values()
-#
-#         return Response(currentUser[0])
-
-# class UserRegister(APIView):
-#     permission_classes = (permissions.AllowAny,)
-#
-#     def post(self, request):
-#         # clean_data = custom_validation(request.data)
-#         print(request.data)
-#         serializer = UserRegisterSerializer(data=request.data)
-#         if serializer.is_valid(raise_exception=True):
-#             user = serializer.create(request.data)
-#             if user:
-#                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(status=status.HTTP_400_BAD_REQUEST)

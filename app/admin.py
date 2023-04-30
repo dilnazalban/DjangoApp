@@ -5,7 +5,5 @@ from .models import Category, App, AppImage, Rating, MyUser
 
 
 admin.site.register(Category)
-admin.site.register(MyUser)
 admin.site.register(App)
-admin.site.register(AppImage)
 admin.site.register(Rating)

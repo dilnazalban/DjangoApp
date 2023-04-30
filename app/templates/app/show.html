@@ -132,26 +132,31 @@
     <br>
     <hr>
     <br>
-    <form method="post" style="display:flex; justify-content: space-around">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="exampleInputPassword4" class="form-label">Rating</label>
-            <input name="star" style="width: 400px; margin-top: 20px" type="range" class="form-range" min="0" max="10"
-                   id="customRange2">
-        </div>
-        <button type="submit" class="btn btn-outline-primary">rate</button>
-    </form>
-    <center><h3>add comment</h3></center>
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">comment</label>
-            <textarea name="comment" id="exampleInputPassword1" class="form-control"></textarea>
-        </div>
-        <button type="submit" class="btn btn-outline-primary">Submit</button>
-    </form>
+    {% if user.is_authenticated %}
+
+        <form method="post" style="display:flex; justify-content: space-around">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="exampleInputPassword4" class="form-label">Rating</label>
+                <input name="star" style="width: 400px; margin-top: 20px" type="range" class="form-range" min="0"
+                       max="10"
+                       id="customRange2">
+            </div>
+            <button type="submit" class="btn btn-outline-primary">rate</button>
+        </form>
+        <center><h3>add comment</h3></center>
 
 
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">comment</label>
+                <textarea name="comment" id="exampleInputPassword1" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-outline-primary">Submit</button>
+        </form>
+
+    {% endif %}
     <hr>
     <center><h3>comments</h3></center>
     <hr>

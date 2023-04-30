@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
     'rest_framework',
-    'corsheaders',
+    'corsheaders', #1
 
 ]
 
@@ -35,7 +35,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  #2
 ]
 
 ROOT_URLCONF = 'DjangoApp.urls'
@@ -126,4 +126,4 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny'
     }
 }
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = True  #3
